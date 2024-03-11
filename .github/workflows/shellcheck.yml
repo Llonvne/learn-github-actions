@@ -16,7 +16,14 @@ jobs:
       - name: Find Shell scripts
         id: find_shell_scripts
         run: |
-          echo "::set-output name=shell_files::$(find . -type f -name '*.sh')"
+          files=$(find . -type f -name '*.sh' | xargs)
+          if [ -z "$files" ]; then
+            echo "::set-output name=shell_files::"
+            echo "No shell scripts found."
+          else
+            echo "::set-output name=shell_files::$files"
+          fi
 
       - name: Run ShellCheck
+        if: ${{ steps.find_shell_scripts.outputs.shell_files }}
         run: shellcheck ${{ steps.find_shell_scripts.outputs.shell_files }}
