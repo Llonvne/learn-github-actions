@@ -1,0 +1,22 @@
+name: ShellCheck
+
+on: [push, pull_request]
+
+jobs:
+  shellcheck:
+    name: Run ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Install ShellCheck
+        run: sudo apt-get install shellcheck
+
+      - name: Find Shell scripts
+        id: find_shell_scripts
+        run: |
+          echo "::set-output name=shell_files::$(find . -type f -name '*.sh')"
+
+      - name: Run ShellCheck
+        run: shellcheck ${{ steps.find_shell_scripts.outputs.shell_files }}
